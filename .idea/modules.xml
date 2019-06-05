@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/CommonUI/CommonUI.iml" filepath="$PROJECT_DIR$/CommonUI/CommonUI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Setting-HN6W04A-aar.iml" filepath="$PROJECT_DIR$/Setting-HN6W04A-aar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/funcpresenter-model/funcpresenter-model.iml" filepath="$PROJECT_DIR$/funcpresenter-model/funcpresenter-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/view-busipresenter-bt/view-busipresenter-bt.iml" filepath="$PROJECT_DIR$/view-busipresenter-bt/view-busipresenter-bt.iml" />
+    </modules>
+  </component>
+</project>

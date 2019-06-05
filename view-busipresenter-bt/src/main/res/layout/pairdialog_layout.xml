@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="640px"
+    android:background="@drawable/popup_bg2"
+    android:layout_height="330px">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:id="@+id/pair_confirm"
+        android:layout_height="87px">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:paddingLeft="10px"
+            android:gravity="center_horizontal"
+            android:paddingRight="10px"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/btstring23"
+                android:textSize="28px"
+                android:textColor="@color/bt_pair_color"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:textSize="28px"
+                android:textColor="@color/bt_pair_color"
+                android:id="@+id/pair_bt_name"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/btstring24"
+                android:textSize="28px"
+                android:textColor="@color/bt_pair_color"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="28px"
+                android:text="123456"
+                android:textColor="@color/bt_pair_color"
+                android:id="@+id/pair_paircode"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/pair_pairing"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="80px"
+                android:src="@drawable/load_big"
+                android:id="@+id/pair_loading"
+                android:scaleType="center"
+                android:layout_height="80px" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/btstring11"
+                android:layout_marginTop="39px"
+                android:textColor="@color/bt_pair_color"
+                android:textSize="28px"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

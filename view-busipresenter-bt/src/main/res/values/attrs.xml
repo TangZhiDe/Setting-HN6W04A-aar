@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <declare-styleable name="SwitchButton" tools:ignore="ResourceName">
+        <attr name="kswThumbDrawable" format="reference"/>
+        <attr name="kswThumbColor" format="color|reference"/>
+        <attr name="kswThumbMargin" format="dimension|reference"/>
+        <attr name="kswThumbMarginTop" format="dimension|reference"/>
+        <attr name="kswThumbMarginBottom" format="dimension|reference"/>
+        <attr name="kswThumbMarginLeft" format="dimension|reference"/>
+        <attr name="kswThumbMarginRight" format="dimension|reference"/>
+        <attr name="kswThumbWidth" format="dimension|reference"/>
+        <attr name="kswThumbHeight" format="dimension|reference"/>
+        <attr name="kswThumbRadius" format="dimension|reference"/>
+        <attr name="kswBackRadius" format="dimension|reference"/>
+        <attr name="kswBackDrawable" format="reference"/>
+        <attr name="kswBackColor" format="color|reference"/>
+        <attr name="kswFadeBack" format="boolean"/>
+        <attr name="kswThumbRangeRatio" format="float"/>
+        <attr name="kswAnimationDuration" format="integer"/>
+        <attr name="kswTintColor" format="color|reference"/>
+        <attr name="kswTextOn" format="string"/>
+        <attr name="kswTextOff" format="string"/>
+        <attr name="kswTextThumbInset" format="dimension"/>
+        <attr name="kswTextExtra" format="dimension"/>
+        <attr name="kswTextAdjust" format="dimension"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="ItemMenuView">
+
+        <attr name="isInvalid" format="boolean" />
+        <attr name="showRightText" format="boolean"/>
+        <attr name="showOnlyRightText" format="boolean"/>
+        <attr name="showSeekBar" format="boolean"/>
+        <attr name="showSwitchButton" format="boolean"/>
+        <attr name="switchButtonState" format="boolean"/>
+
+        <attr name="seekBarMax1" format="integer"/>
+
+        <attr name="switchButtonWidth" format="dimension"/>
+
+        <attr name="textColor" format="color|reference" />
+        <attr name="textInvalidColor" format="color|reference" />
+        <attr name="text" format="string"/>
+        <attr name="textSize" format="dimension|reference" />
+        <attr name="rightText" format="string"/>
+        <attr name="rightTextColor" format="color|reference" />
+        <attr name="rightTextInvalidColor" format="color|reference" />
+        <attr name="rightTextSize" format="dimension|reference" />
+        <attr name="rightNormalIcon" format="reference"/>
+        <attr name="rightInvalidIcon" format="reference"/>
+
+    </declare-styleable>
+
+    <declare-styleable name="SeekBarView">
+        <attr name="seekBarMax" format="integer" />
+        <attr name="seekBarBgWidth" format="integer" />
+        <attr name="seekBarBgHeight" format="integer" />
+        <attr name="seekBarMarginLeft" format="integer" />
+
+        <attr name="thumbTextColor" format="color|reference" />
+        <attr name="thumbTextSize" format="dimension|reference" />
+
+        <attr name="leftIcon" format="reference"/>
+        <attr name="rightIcon" format="reference"/>
+
+        <attr name="showProgress" format="boolean"/>
+    </declare-styleable>
+
+</resources>

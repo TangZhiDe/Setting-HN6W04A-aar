@@ -1,0 +1,33 @@
+<resources>
+    <string name="setting_app_name">asdsad</string>
+
+    <!-- service package -->
+    <string name="str_sev_package">com.nforetek.bt.customer.service</string>
+    <!-- service action -->
+    <string name="str_sev_action">com.nforetek.bt.CUSTOMER_SERVICE</string>
+    <string name="btstring1">BT</string>
+    <string name="btstring2">Auto connect</string>
+    <string name="btstring3">Auto DownLoad contacts</string>
+    <string name="btstring4">Device name</string>
+    <string name="btstring5">Paired list</string>
+    <string name="btstring6">(Paired device list is empty)</string>
+    <string name="btstring7">Search</string>
+    <string name="btstring8">(Bluetooth device not found)</string>
+    <string name="btstring9">Refresh</string>
+    <string name="btstring10">Confirm this pairing code on</string>
+    <string name="btstring11">Connecting...</string>
+    <string name="btstring12">(Connected)</string>
+    <string name="btstring13">Confirm disconnected</string>
+    <string name="btstring14">You can still reconnect after disconnecting.</string>
+    <string name="btstring15">Disconnect</string>
+    <string name="btstring16">Cancel</string>
+    <string name="btstring17">Are you sure to connect</string>
+    <string name="btstring18">Disconnect connected devices before connecting</string>
+    <string name="btstring19">Connect</string>
+    <string name="btstring20">Confirm delete</string>
+    <string name="btstring21">You can still re-pair after deleting</string>
+    <string name="btstring22">Delete</string>
+    <string name="btstring23">At</string>
+    <string name="btstring24">Confirm the pairing code:</string>
+    <string name="btstring25">Confirm pairing</string>
+</resources>

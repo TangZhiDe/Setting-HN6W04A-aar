@@ -1,0 +1,34 @@
+<resources>
+    <string name="setting_app_name">asdsad</string>
+
+    <!-- service package -->
+    <string name="str_sev_package">com.nforetek.bt.customer.service</string>
+    <!-- service action -->
+    <string name="str_sev_action">com.nforetek.bt.CUSTOMER_SERVICE</string>
+    <string name="btstring1">蓝牙</string>
+    <string name="btstring2">自动连接</string>
+    <string name="btstring3">自动同步通讯录</string>
+    <string name="btstring4">蓝牙设备名</string>
+    <string name="btstring5">历史配对</string>
+    <string name="btstring6">(暂无历史配对记录)</string>
+    <string name="btstring7">搜索新设备</string>
+    <string name="btstring8">(未搜索到范围内可配对设备)</string>
+    <string name="btstring9">刷新</string>
+    <string name="btstring10">在#手机设备名#上确认此配对码</string>
+    <string name="btstring11">正在连接…</string>
+    <string name="btstring12">(已连接)</string>
+    <string name="btstring13">确认断开</string>
+    <string name="btstring14">断开后您仍可以重新连接。</string>
+    <string name="btstring15">断开连接</string>
+    <string name="btstring16">取消</string>
+    <string name="btstring17">确认连接</string>
+    <string name="btstring18">连接前将断开已连接设备。</string>
+    <string name="btstring19">连接</string>
+    <string name="btstring20">确认删除</string>
+    <string name="btstring21">删除后，您仍可以重新配对。</string>
+    <string name="btstring22">删除</string>
+    <string name="btstring23">在</string>
+    <string name="btstring24">上确认此配对码:</string>
+    <string name="btstring25">确认配对</string>
+
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bt_unselect_color">#868686</color>
+    <color name="bt_normal_color">#6f7b8c</color>
+    <color name="bt_black_color">#8893a3</color>
+    <color name="bt_name_color">#6f7b8c</color>
+    <color name="bt_blue_color">#008bff</color>
+    <color name="bt_pair_color">#222</color>
+    <color name="bt_tip_color">#868686</color>
+</resources>

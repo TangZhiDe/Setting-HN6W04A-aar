@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="bt_unselect_color">#6f7b8c</color>
+    <color name="bt_unselect_dialog">#6f7b8c</color>
     <color name="bt_normal_color">#222222</color>
     <color name="bt_black_color">#000</color>
     <color name="bt_name_color">#000</color>

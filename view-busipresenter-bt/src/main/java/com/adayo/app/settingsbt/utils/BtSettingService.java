@@ -11,6 +11,7 @@ import android.util.Log;
 public class BtSettingService extends Service {
     protected static String TAG = BtSettingService.class.getCanonicalName();
     private PairBroadcastReceiver pairBroadcastReceiver;
+    public static boolean pairFromPhone = true;
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -20,7 +21,11 @@ public class BtSettingService extends Service {
     public void onCreate() {
         super.onCreate();
         registerBroadcast();
+
     }
+
+
+
     private void registerBroadcast() {
         pairBroadcastReceiver = new PairBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
@@ -34,6 +39,11 @@ public class BtSettingService extends Service {
         if(pairBroadcastReceiver != null){
             unregisterReceiver(pairBroadcastReceiver);
         }
+    }
+
+    public static void setPairFromPhone(boolean pairFromPhone1){
+        pairFromPhone = pairFromPhone1;
+        Log.d(TAG, "setPairFromPhone: pairFromPhone=="+pairFromPhone );
     }
     @Override
     public void onDestroy() {

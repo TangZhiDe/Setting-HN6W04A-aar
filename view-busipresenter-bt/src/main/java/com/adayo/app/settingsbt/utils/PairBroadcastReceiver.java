@@ -10,7 +10,6 @@ import android.util.Log;
 public class PairBroadcastReceiver extends BroadcastReceiver {
     static final String TAG = "PairBroadcastReceiver";
     private static int mPairType = 0;
-    public static boolean pairFromPhone = true;
     private static BluetoothDevice mDevice = null;
     public static WindowDialog instance;
 
@@ -73,13 +72,12 @@ public class PairBroadcastReceiver extends BroadcastReceiver {
 
 
     private void showDialog(Context context, String name, String pairingValue) {
-        Log.d(TAG, "showDialog:pairFromPhone=+ " + pairFromPhone);
-        instance.setParams(pairFromPhone, mDevice, name, "" + pairingValue);
+        Log.d(TAG, "showDialog:pairFromPhone=+ " + BtSettingService.pairFromPhone);
+        instance.setParams(BtSettingService.pairFromPhone, mDevice, name, "" + pairingValue);
+        //
+        BtSettingService.setPairFromPhone(true);
     }
 
-    public static void setPairFromPhone(boolean pairFromPhone1){
-        pairFromPhone = pairFromPhone1;
-        Log.d(TAG, "setPairFromPhone: pairFromPhone=="+pairFromPhone );
-    }
+
 
 }

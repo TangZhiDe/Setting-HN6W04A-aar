@@ -1,9 +1,13 @@
 package com.adayo.app.settingsbt.presenter.business.system;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.adayo.app.settingsbt.bean.BluetoothBean;
+import com.adayo.app.settingsbt.ui.fragment.system.BluetoothTFragment;
 import com.nforetek.bt.aidl.NfHfpClientCall;
 import com.nforetek.bt.base.jar.NforeBtBaseJar;
 import com.nforetek.bt.base.listener.BluetoothMusicChangeListener;
@@ -13,6 +17,7 @@ import com.nforetek.bt.base.listener.BluetoothSettingChangeListener;
 import com.nforetek.bt.base.listener.BluetoothSppChangeListener;
 import com.nforetek.bt.bean.CallLogs;
 import com.nforetek.bt.bean.Contacts;
+import com.nforetek.bt.res.NfDef;
 
 import java.util.List;
 
@@ -32,7 +37,7 @@ public class BtPresenter implements
 	public static List<CallLogs> callLogsList = null;
 
 	private boolean pairFromPhone = true;
-	
+	private BluetoothTFragment bluetoothTFragment;
 	private UiBluetoothServiceConnectedListener mServiceConnectedListener;
     private UiBluetoothSettingChangeListerer mSettingChangeListener;
     private UiBluetoothPhoneChangeListerer mPhoneChangeListener;
@@ -50,6 +55,14 @@ public class BtPresenter implements
 	public void reqBtkk(){
     	//是否已储存ui通话记录到数据库
 		setPairFromPhone(true);
+	}
+
+	public BluetoothTFragment getBluetoothTFragment() {
+		return bluetoothTFragment;
+	}
+
+	public void setBluetoothTFragment(BluetoothTFragment bluetoothTFragment) {
+		this.bluetoothTFragment = bluetoothTFragment;
 	}
 
 	public boolean isPairFromPhone() {
@@ -1467,6 +1480,17 @@ public class BtPresenter implements
     @Override
 	public void onEnableChanged(boolean isEnable) {
 		Log.i(TAG, "onEnableChanged");
+		BluetoothTFragment bluetoothTFragment = getBluetoothTFragment();
+		Log.d(TAG, "onEnableChanged: bluetoothTFragment="+bluetoothTFragment);
+		if(bluetoothTFragment != null){
+			if (isEnable) {
+				//蓝牙打开
+				bluetoothTFragment.myHandler.sendEmptyMessage(0x03);
+			} else {
+				bluetoothTFragment.myHandler.sendEmptyMessage(0x04);
+			}
+		}
+
 		if(mSettingChangeListener == null){
 			return;
 		}
@@ -1484,12 +1508,32 @@ public class BtPresenter implements
 	}
 
 	@Override
-	public void onHfpStateChanged(String s, int i) {
+	public void onHfpStateChanged(String address, int isConnected) {
 		Log.i(TAG, "onHfpStateChanged");
+		BluetoothTFragment bluetoothTFragment = getBluetoothTFragment();
+		Log.d(TAG, "onEnableChanged: bluetoothTFragment="+bluetoothTFragment);
+		if(bluetoothTFragment != null){
+			Log.d(TAG, "onHfpStateChanged: address==" + address + "--isConnected==" + isConnected);
+			if (isConnected == NforeBtBaseJar.CONNECT_DISCONNECT) {//蓝牙已断开连接
+				//蓝牙已断开连接
+				bluetoothTFragment.currAddress = "";
+
+			} else if (isConnected == NforeBtBaseJar.CONNECT_SUCCESSED) {//蓝牙连接上了
+				bluetoothTFragment.currAddress = address;
+				bluetoothTFragment.myHandler.sendEmptyMessage(0x05);
+			}
+
+			Log.d(TAG, "onHfpStateChanged: isConnected==" + isConnected + "===currAddress" + bluetoothTFragment.currAddress);
+			try {
+				reqBtPairedDevices();//重新获取已配对设备
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 		if(mSettingChangeListener == null){
 			return;
 		}
-		mSettingChangeListener.onHfpStateChanged(s, i);
+		mSettingChangeListener.onHfpStateChanged(address,isConnected);
 	}
 
 //	@Override
@@ -1563,6 +1607,12 @@ public class BtPresenter implements
 	@Override
 	public void onAdapterDiscoveryStarted() {
 		Log.i(TAG, "onAdapterDiscoveryStarted");
+		BluetoothTFragment bluetoothTFragment = getBluetoothTFragment();
+		Log.d(TAG, "onEnableChanged: bluetoothTFragment="+bluetoothTFragment);
+		if(bluetoothTFragment != null){
+			Log.d(TAG, "onAdapterDiscoveryStarted: 开始扫描蓝牙");
+			bluetoothTFragment.myHandler.sendEmptyMessage(0x89);
+		}
 		if(mSettingChangeListener == null){
 			return;
 		}
@@ -1572,6 +1622,12 @@ public class BtPresenter implements
 	@Override
 	public void onAdapterDiscoveryFinished() {
 		Log.i(TAG, "onAdapterDiscoveryFinished");
+		BluetoothTFragment bluetoothTFragment = getBluetoothTFragment();
+		Log.d(TAG, "onEnableChanged: bluetoothTFragment="+bluetoothTFragment);
+		if(bluetoothTFragment != null){
+			Log.d(TAG, "onAdapterDiscoveryFinished: 蓝牙扫描完毕");
+			bluetoothTFragment.myHandler.sendEmptyMessage(0x88);
+		}
 		if(mSettingChangeListener == null){
 			return;
 		}
@@ -1582,7 +1638,30 @@ public class BtPresenter implements
 	public void retPairedDevices(int elements, String[] address, String[] name,
                                  int[] supportProfile) {
 		Log.i(TAG, "retPairedDevices");
-
+		BluetoothTFragment bluetoothTFragment = getBluetoothTFragment();
+		Log.d(TAG, "onEnableChanged: bluetoothTFragment="+bluetoothTFragment);
+		if(bluetoothTFragment != null){
+			bluetoothTFragment.pairedList.clear();
+			bluetoothTFragment.beanList.clear();
+			if (elements > 0) {
+				for (int i = 0; i < elements; i++) {
+					Log.d(TAG, "retPairedDevices: name===" + name[i] + "====address[i]==" + address[i]);
+					if (name[i] == null) {
+						name[i] = address[i];
+					}
+					int state = 1;
+					if (address[i].equals(bluetoothTFragment.currAddress)) {
+						state = 2;
+						Log.d(TAG, "retPairedDevices: currAddress连接");
+					}
+					Log.d(TAG, "retPairedDevices: name===" + name[i] + "====address[i]==" + address[i] + "===state===" + state + "==currAddress===" + bluetoothTFragment.currAddress);
+					BluetoothBean bluetoothBean = new BluetoothBean(name[i], state, address[i]);
+					bluetoothTFragment.beanList.add(bluetoothBean);
+//                pairedList.add(bluetoothBean);
+				}
+			}
+			bluetoothTFragment.myHandler.sendEmptyMessage(0x01);
+		}
 		if(mSettingChangeListener == null){
 			return;
 		}
@@ -1592,6 +1671,35 @@ public class BtPresenter implements
 	@Override
 	public void onDeviceFound(String address, String name) {
 		Log.i(TAG, "onDeviceFound");
+		BluetoothTFragment bluetoothTFragment = getBluetoothTFragment();
+		Log.d(TAG, "onEnableChanged: bluetoothTFragment="+bluetoothTFragment);
+		if(bluetoothTFragment != null){
+			if (!bluetoothTFragment.device_founded_list.contains(address) && address != NfDef.DEFAULT_ADDRESS) {
+				int state = 0;//未配对
+				if (bluetoothTFragment.pairedList.size() > 0) {
+					for (int i = 0; i < bluetoothTFragment.pairedList.size(); i++) {
+						if (address.equals(bluetoothTFragment.pairedList.get(i).getAddress())) {
+							state = 1;//已配对过
+						}
+					}
+				}
+				if (address.equals(bluetoothTFragment.currAddress)) {
+					state = 2;
+				}
+				if(state == 0){
+					bluetoothTFragment.device_founded_list.add(address);
+					BluetoothBean bean = new BluetoothBean(name, state, address);
+					Message message = new Message();
+					message.what = 0x02;
+					Bundle bundle = new Bundle();
+					bundle.putSerializable("bean", bean);
+					message.setData(bundle);
+					bluetoothTFragment.myHandler.sendMessage(message);
+					Log.d(TAG, "onDeviceFound: sendMessage");
+				}
+
+			}
+		}
 		if(mSettingChangeListener == null){
 			return;
 		}
@@ -1600,13 +1708,33 @@ public class BtPresenter implements
 
 	@Override
 	public void onDeviceBondStateChanged(String address, String name,
-                                         int newState) {
+                                         int state) {
 		Log.i(TAG, "onDeviceBondStateChanged");
+		BluetoothTFragment bluetoothTFragment = getBluetoothTFragment();
+		Log.d(TAG, "onEnableChanged: bluetoothTFragment="+bluetoothTFragment);
+		if(bluetoothTFragment != null){
+			if (state == NfDef.BOND_BONDED) {
+
+				try {
+					for (int i = 0; i < bluetoothTFragment.searchList.size(); i++) {
+						if (bluetoothTFragment.searchList.get(i).getAddress().equals(address)) {
+							bluetoothTFragment.searchList.remove(i);
+						}
+					}
+					bluetoothTFragment.myHandler.sendEmptyMessage(0x02);
+					Log.d(TAG, "onDeviceBondStateChanged: 获取已配对设备");
+					reqBtPairedDevices();//重新获取已配对设备
+//                mBPresenter.reqBtConnectHfpA2dp(address);//如果配对成功，连接设备
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 
 		if(mSettingChangeListener == null){
 			return;
 		}
-		mSettingChangeListener.onDeviceBondStateChanged(address, name, newState);
+		mSettingChangeListener.onDeviceBondStateChanged(address, name, state);
 	}
 
 	@Override
@@ -1632,6 +1760,15 @@ public class BtPresenter implements
 	@Override
 	public void onServiceConnectedChanged(boolean isConnected) {
 		Log.i(TAG, "onServiceConnectedChanged");
+		BluetoothTFragment bluetoothTFragment = getBluetoothTFragment();
+		Log.d(TAG, "onEnableChanged: bluetoothTFragment="+bluetoothTFragment);
+		if(bluetoothTFragment != null){
+			if (isConnected) {
+				bluetoothTFragment.myHandler.sendEmptyMessage(0x00);
+			} else {
+				Log.d(TAG, "onServiceConnectedChanged: 服务绑定失败");
+			}
+		}
 		if(mServiceConnectedListener == null){
 			return;
 		}

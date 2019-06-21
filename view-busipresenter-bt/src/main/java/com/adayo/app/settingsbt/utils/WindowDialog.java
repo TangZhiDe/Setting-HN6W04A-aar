@@ -6,6 +6,7 @@ import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -67,7 +68,7 @@ public class WindowDialog implements View.OnClickListener{
 //    }
 private WindowDialog(Context context){
     this.context = context;
-    this.x = -250;
+    this.x = 360;
     this.y = 50;
     this.init();
 }
@@ -108,7 +109,7 @@ public void setParams(boolean pairFromPhone, BluetoothDevice mDevice,String name
         wmParams = new WindowManager.LayoutParams();
         wmParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         wmParams.format = PixelFormat.TRANSLUCENT;
-//        wmParams.gravity = Gravity.LEFT | Gravity.BOTTOM;
+        wmParams.gravity = Gravity.CENTER_VERTICAL | Gravity.START;
         wmParams.width = 640;
         wmParams.height = 330;
 //        wmParams.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -195,7 +196,7 @@ public void setParams(boolean pairFromPhone, BluetoothDevice mDevice,String name
                     wm.removeView(mView);
                     Log.d(TAG, "dismiss: " );
                     mIsShow = false;
-                    PairBroadcastReceiver.setPairFromPhone(true);
+//                    PairBroadcastReceiver.setPairFromPhone(true);
                 }
 
             } catch (Exception e) {

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -82,18 +83,16 @@ public class ConfirmDialog extends Dialog {
             alert_bt_disconnect.setText(context.getResources().getString(R.string.btstring22));
             alert_bt_tip.setText(context.getResources().getString(R.string.btstring21));
         }
-
-
         alert_bt_disconnect.setOnClickListener(new clickListener());
         alert_bt_cancel.setOnClickListener(new clickListener());
-
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+//        dialogWindow.setGravity(Gravity.CENTER | Gravity.START);
         lp.width = 640;
         lp.height = 330;
-        lp.x = -250;
-        lp.y = 50;
-//        lp.gravity = Gravity.CENTER;
+        lp.x = 360;
+//        lp.y = 50;
+        lp.gravity = Gravity.CENTER_VERTICAL | Gravity.START;
         dialogWindow.setAttributes(lp);
     }
 

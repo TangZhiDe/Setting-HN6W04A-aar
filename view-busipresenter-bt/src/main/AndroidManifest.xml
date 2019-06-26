@@ -92,7 +92,6 @@
         android:appComponentFactory="whateverString"
         tools:replace="android:appComponentFactory"-->
     <application
-        android:name=".fota.app.BtApplication"
         android:allowBackup="true"
         android:supportsRtl="true">
 

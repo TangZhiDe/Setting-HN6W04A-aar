@@ -7,7 +7,12 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -45,6 +50,8 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
     private Rect mIndicatorRect = new Rect();
     private GradientDrawable mIndicatorDrawable = new GradientDrawable();
     private GradientDrawable mRectDrawable = new GradientDrawable();
+
+    private GradientDrawable mMaskDrawable = new GradientDrawable();
 
     private Paint mDividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -93,6 +100,10 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
 
     private static final String TAG = SegmentTabLayout.class.getSimpleName();
 
+    private Drawable mBarBgDrawble;
+    private Drawable mIndicatorBgDrawble;
+
+
     /**
      * anim
      */
@@ -119,12 +130,16 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
         this.mContext = context;
         mTabsContainer = new LinearLayout(context);
         addView(mTabsContainer);
-
+        if(attrs == null){
+            return;
+        }
         obtainAttributes(context, attrs);
 
         //get layout_height
         String height = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "layout_height");
-
+        if(height == null){
+            return;
+        }
         //create ViewPager
         if (height.equals(ViewGroup.LayoutParams.MATCH_PARENT + "")) {
         } else if (height.equals(ViewGroup.LayoutParams.WRAP_CONTENT + "")) {
@@ -158,7 +173,7 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
         mDividerWidth = ta.getDimension(R.styleable.SegmentTabLayout_tl_divider_width, dp2px(1));
         mDividerPadding = ta.getDimension(R.styleable.SegmentTabLayout_tl_divider_padding, 0);
 
-        mTextsize = ta.getDimension(R.styleable.SegmentTabLayout_tl_textsize, sp2px(13f));
+        mTextsize = ta.getDimension(R.styleable.SegmentTabLayout_tl_textsize, 20);
         mTextSelectColor = ta.getColor(R.styleable.SegmentTabLayout_tl_textSelectColor, Color.parseColor("#ffffff"));
         mTextUnselectColor = ta.getColor(R.styleable.SegmentTabLayout_tl_textUnselectColor, mIndicatorColor);
 //        Log.d(TAG, "obtainAttributes: mTextSelectColor = "+mTextSelectColor+"   mTextUnselectColor = "+mTextUnselectColor);
@@ -173,7 +188,18 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
         mBarStrokeColor = ta.getColor(R.styleable.SegmentTabLayout_tl_bar_stroke_color, mIndicatorColor);
         mBarStrokeWidth = ta.getDimension(R.styleable.SegmentTabLayout_tl_bar_stroke_width, dp2px(1));
 
+        mBarBgDrawble =ta.getDrawable(R.styleable.SegmentTabLayout_tl_bar_background);
+        mIndicatorBgDrawble =ta.getDrawable(R.styleable.SegmentTabLayout_tl_indicator_background);
+
         ta.recycle();
+    }
+
+    public void setBarBackgroud(Drawable drawable) {
+        mBarBgDrawble = drawable;
+    }
+
+    public void setIndicatorBackground(Drawable drawable) {
+        mIndicatorBgDrawble = drawable;
     }
 
     public void setTabData(String[] titles) {
@@ -190,7 +216,9 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
      * 关联数据支持同时切换fragments
      */
     public void setTabData(String[] titles, FragmentActivity fa, int containerViewId, ArrayList<Fragment> fragments) {
-        mFragmentChangeManager = new FragmentChangeManager(fa.getSupportFragmentManager(), containerViewId, fragments);
+        if(fa.getSupportFragmentManager() != null){
+            mFragmentChangeManager = new FragmentChangeManager(fa.getSupportFragmentManager(), containerViewId, fragments);
+        }
         setTabData(titles);
     }
 
@@ -215,6 +243,9 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
      */
     private void addTab(final int position, View tabView) {
         TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
+        if(tv_tab_title == null){
+            return;
+        }
         tv_tab_title.setText(mTitles[position]);
 
         tabView.setOnClickListener(new OnClickListener() {
@@ -241,16 +272,24 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
         if (mTabWidth > 0) {
             lp_tab = new LinearLayout.LayoutParams((int) mTabWidth, LayoutParams.MATCH_PARENT);
         }
+
+        lp_tab.setMargins(0, -10, 0, 0);
         mTabsContainer.addView(tabView, position, lp_tab);
     }
 
     private void updateTabStyles() {
         for (int i = 0; i < mTabCount; i++) {
             View tabView = mTabsContainer.getChildAt(i);
+            if(tabView == null){
+                return;
+            }
             tabView.setPadding((int) mTabPadding, 0, (int) mTabPadding, 0);
             TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
+            if(tv_tab_title == null){
+                return;
+            }
             tv_tab_title.setTextColor(i == mCurrentTab ? mTextSelectColor : mTextUnselectColor);
-            tv_tab_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextsize);
+            tv_tab_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, i == mCurrentTab ? 22 : mTextsize);
 //            tv_tab_title.setPadding((int) mTabPadding, 0, (int) mTabPadding, 0);
             if (mTextAllCaps) {
                 tv_tab_title.setText(tv_tab_title.getText().toString().toUpperCase());
@@ -268,8 +307,15 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
         for (int i = 0; i < mTabCount; ++i) {
             View tabView = mTabsContainer.getChildAt(i);
             final boolean isSelect = i == position;
+            if(tabView == null){
+                return;
+            }
             TextView tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
+            if(tab_title == null){
+                return;
+            }
             tab_title.setTextColor(isSelect ? mTextSelectColor : mTextUnselectColor);
+            tab_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, isSelect ? 22 : mTextsize);
             if (mTextBold == TEXT_BOLD_WHEN_SELECT) {
                 tab_title.getPaint().setFakeBoldText(isSelect);
             }
@@ -277,11 +323,19 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
     }
 
     private void calcOffset() {
+
         final View currentTabView = mTabsContainer.getChildAt(this.mCurrentTab);
+        if(currentTabView == null){
+            return;
+        }
         mCurrentP.left = currentTabView.getLeft();
         mCurrentP.right = currentTabView.getRight();
 
+
         final View lastTabView = mTabsContainer.getChildAt(this.mLastTab);
+        if(lastTabView == null){
+            return;
+        }
         mLastP.left = lastTabView.getLeft();
         mLastP.right = lastTabView.getRight();
 
@@ -304,7 +358,11 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
     }
 
     private void calcIndicatorRect() {
+
         View currentTabView = mTabsContainer.getChildAt(this.mCurrentTab);
+        if(currentTabView == null){
+            return;
+        }
         float left = currentTabView.getLeft();
         float right = currentTabView.getRight();
 
@@ -358,13 +416,22 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
 
     @Override
     public void onAnimationUpdate(ValueAnimator animation) {
+        if(animation.getAnimatedValue() == null){
+            return;
+        }
         IndicatorPoint p = (IndicatorPoint) animation.getAnimatedValue();
+        if(p == null){
+            return;
+        }
         mIndicatorRect.left = (int) p.left;
         mIndicatorRect.right = (int) p.right;
         invalidate();
     }
 
     private boolean mIsFirstDraw = true;
+    private boolean mIsBgFirstDraw = true;
+
+    private float[] radii = new float[8];
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -385,12 +452,16 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
             mIndicatorCornerRadius = mIndicatorHeight / 2;
         }
 
-        //draw rect
-        mRectDrawable.setColor(mBarColor);
-        mRectDrawable.setStroke((int) mBarStrokeWidth, mBarStrokeColor);
-        mRectDrawable.setCornerRadius(mIndicatorCornerRadius);
-        mRectDrawable.setBounds(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
-        mRectDrawable.draw(canvas);
+        if(mBarBgDrawble == null) {
+            //draw rect
+            mRectDrawable.setColor(mBarColor);
+            mRectDrawable.setStroke((int) mBarStrokeWidth, mBarStrokeColor);
+            mRectDrawable.setCornerRadius(mIndicatorCornerRadius);
+            mRectDrawable.setBounds(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
+            mRectDrawable.draw(canvas);
+        } else {
+            drawBarBackground(canvas);
+        }
 
         // draw divider
         if (!mIndicatorAnimEnable && mDividerWidth > 0) {
@@ -398,6 +469,9 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
             mDividerPaint.setColor(mDividerColor);
             for (int i = 0; i < mTabCount - 1; i++) {
                 View tab = mTabsContainer.getChildAt(i);
+                if(tab == null){
+                    return;
+                }
                 canvas.drawLine(paddingLeft + tab.getRight(), mDividerPadding, paddingLeft + tab.getRight(), height - mDividerPadding, mDividerPaint);
             }
         }
@@ -414,13 +488,32 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
         }
 
         Log.d(TAG, "onDraw: mIndicatorColor = " + mIndicatorColor);
-        mIndicatorDrawable.setColor(mIndicatorColor);
-        mIndicatorDrawable.setBounds(paddingLeft + (int) mIndicatorMarginLeft + mIndicatorRect.left,
-                (int) mIndicatorMarginTop, (int) (paddingLeft + mIndicatorRect.right - mIndicatorMarginRight),
-                (int) (mIndicatorMarginTop + mIndicatorHeight));
-        mIndicatorDrawable.setCornerRadii(mRadiusArr);
-        mIndicatorDrawable.draw(canvas);
+        if (mIndicatorBgDrawble == null) {
+            mIndicatorDrawable.setColor(mIndicatorColor);
+            mIndicatorDrawable.setBounds(paddingLeft + (int) mIndicatorMarginLeft + mIndicatorRect.left,
+                    (int) mIndicatorMarginTop, (int) (paddingLeft + mIndicatorRect.right - mIndicatorMarginRight),
+                    (int) (mIndicatorMarginTop + mIndicatorHeight));
+            mIndicatorDrawable.setCornerRadii(mRadiusArr);
+            mIndicatorDrawable.draw(canvas);
+        } else {
+            drawIndicatorBackground(canvas, paddingLeft);
+        }
+    }
 
+    private void drawIndicatorBackground(Canvas canvas, int paddingLeft) {
+        if (mIndicatorBgDrawble != null) {
+            mIndicatorBgDrawble.setBounds(paddingLeft + (int) mIndicatorMarginLeft + mIndicatorRect.left - 5,
+                    (int) mIndicatorMarginTop, (int) (paddingLeft + mIndicatorRect.right - mIndicatorMarginRight) + 5,
+                    (int) (mIndicatorMarginTop + mIndicatorHeight));
+            mIndicatorBgDrawble.draw(canvas);
+        }
+    }
+
+    private void drawBarBackground(Canvas canvas) {
+        if (mBarBgDrawble != null) {
+            mBarBgDrawble.setBounds(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom()-10);
+            mBarBgDrawble.draw(canvas);
+        }
     }
 
     //setter and getter
@@ -655,6 +748,9 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
         }
 
         View tabView = mTabsContainer.getChildAt(position);
+        if(tabView == null){
+            return;
+        }
         MsgView tipView = (MsgView) tabView.findViewById(R.id.rtv_msg_tip);
         if (tipView != null) {
             UnreadMsgUtils.show(tipView, num);
@@ -687,6 +783,9 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
         }
 
         View tabView = mTabsContainer.getChildAt(position);
+        if(tabView == null){
+            return;
+        }
         MsgView tipView = (MsgView) tabView.findViewById(R.id.rtv_msg_tip);
         if (tipView != null) {
             tipView.setVisibility(View.GONE);
@@ -703,11 +802,12 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
             position = mTabCount - 1;
         }
         View tabView = mTabsContainer.getChildAt(position);
+        if(tabView == null){
+            return;
+        }
         MsgView tipView = (MsgView) tabView.findViewById(R.id.rtv_msg_tip);
         if (tipView != null) {
-            TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
             mTextPaint.setTextSize(mTextsize);
-            float textWidth = mTextPaint.measureText(tv_tab_title.getText().toString());
             float textHeight = mTextPaint.descent() - mTextPaint.ascent();
             MarginLayoutParams lp = (MarginLayoutParams) tipView.getLayoutParams();
 
@@ -726,6 +826,9 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
             position = mTabCount - 1;
         }
         View tabView = mTabsContainer.getChildAt(position);
+        if(tabView == null){
+            return null;
+        }
         MsgView tipView = (MsgView) tabView.findViewById(R.id.rtv_msg_tip);
         return tipView;
     }
@@ -778,11 +881,17 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
     }
 
     protected int dp2px(float dp) {
+        if(mContext.getResources() == null){
+            return 0;
+        }
         final float scale = mContext.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
 
     protected int sp2px(float sp) {
+        if(this.mContext.getResources() == null){
+            return 0;
+        }
         final float scale = this.mContext.getResources().getDisplayMetrics().scaledDensity;
         return (int) (sp * scale + 0.5f);
     }

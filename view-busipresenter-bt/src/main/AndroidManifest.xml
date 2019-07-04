@@ -90,6 +90,7 @@
     <uses-permission android:name="android.permission.NETWORK_SETTINGS" />
 <!--
         android:appComponentFactory="whateverString"
+        android:name="com.adayo.app.settings.fota.app.FotaApplication"
         tools:replace="android:appComponentFactory"-->
     <application
         android:allowBackup="true"

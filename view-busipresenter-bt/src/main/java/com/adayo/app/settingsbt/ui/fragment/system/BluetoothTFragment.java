@@ -2,10 +2,7 @@ package com.adayo.app.settingsbt.ui.fragment.system;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,16 +29,17 @@ import com.adayo.app.settingsbt.R;
 import com.adayo.app.settingsbt.adapter.BTRecyclerAdapter;
 import com.adayo.app.settingsbt.bean.BluetoothBean;
 import com.adayo.app.settingsbt.presenter.business.system.BtPresenter;
+import com.adayo.app.settingsbt.ui.view.ItemMenuViewBt;
 import com.adayo.app.settingsbt.utils.BtSettingService;
 import com.adayo.app.settingsbt.utils.ConfirmDialog;
 import com.adayo.app.settingsbt.utils.MyLinearLayoutManager;
-import com.adayo.app.settingsbt.utils.PairBroadcastReceiver;
 import com.adayo.app.utils.LogUtils;
 import com.adayo.proxy.sourcemngproxy.Control.SrcMngSwitchProxy;
-import com.nforetek.bt.base.jar.NforeBtBaseJar;
 import com.nforetek.bt.res.NfDef;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,12 +52,12 @@ import static com.adayo.app.base.BaseConstant.FRAG_FIRST_PARAM;
  * @desc. 蓝牙Fragment
  */
 @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
-public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
+public class BluetoothTFragment extends BaseFragment<BtPresenter> {
 
     private static final String TAG = BluetoothTFragment.class.getCanonicalName();
-    private ImageView setting_bt_auto_answer;
-    private ImageView setting_bt_auto_connect;
-    private ImageView setting_bt_switch;
+    private ItemMenuViewBt setting_bt_auto_answer;
+    private ItemMenuViewBt setting_bt_auto_connect;
+    private ItemMenuViewBt setting_bt_switch;
     private RecyclerView history_matching_list;
     //    private ImageView history_matching_refresh;
     private TextView history_matching_tip;
@@ -77,13 +75,9 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
     public List<BluetoothBean> beanList = new ArrayList<>();
     private Activity myActicity;
     private LinearLayout setting_zi;
-    private TextView setting_bt;
-    private TextView setting_atuo;
-    private TextView setting_tbtxl;
     private TextView setting_sbm;
     private TextView setting_lspd;
     private TextView setting_ssxsb;
-    private BtLanguageChange languageReceive;
     private int currentNightMode = 19;
     private ImageView setting_bt_loading;
     private MyLinearLayoutManager linearLayoutManager;
@@ -139,9 +133,9 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
     @Override
     public void onDestroy() {
         LogUtils.iL(TAG, "onDestroy");
-//        if (mBPresenter != null) {
-//            mBPresenter.unregisterServiceListener();
-//        }
+        if (mBPresenter != null) {
+            mBPresenter.unregisterServiceListener();
+        }
         currAddress = "";
         super.onDestroy();
     }
@@ -158,8 +152,9 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
     public void setBPresenter(BtPresenter btPresenter) {
         this.mBPresenter = btPresenter;
         Log.d(TAG, "setBPresenter:1.91 ");
-        if (mBPresenter == null) {
-            Log.d(TAG, "setBPresenter: ==null");
+        if (mBPresenter != null) {
+            Log.d(TAG, "setBPresenter: registerServiceListener");
+            mBPresenter.registerServiceListener();
         }
         if (getActivity() == null) {
             Log.d(TAG, "getActivity: ==null");
@@ -174,7 +169,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
         super.onAttach(context);
         myActicity = (Activity) context;
 
-        Log.d(TAG, "onAttach: myActicity="+myActicity);
+        Log.d(TAG, "onAttach: myActicity=" + myActicity);
 //        mBPresenter.registerServiceListener(myActicity);
 //        mBPresenter.registerUiBluetoothServiceConnectedListener(this);
 //        mBPresenter.registerUiBluetoothSettingChangeListerer(this);
@@ -222,6 +217,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
         Log.d(TAG, "initView: currAddress == " + currAddress);
         init();
     }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -238,23 +234,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
 
     }
 
-    private void registerReceiver() {
-        languageReceive = new BtLanguageChange();
-        IntentFilter intent = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
-        getActivity().registerReceiver(languageReceive, intent);
-    }
 
-
-    class BtLanguageChange extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_LOCALE_CHANGED)) {
-                Log.d("LocaleChangeReceiver", "Language change");
-                updateText();
-            }
-        }
-    }
 
     public boolean isFromBtPhone = false;
 
@@ -265,9 +245,12 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
 
     public void updateText() {
         Log.d(TAG, "updateText: ");
-        setting_bt.setText(getMContext().getResources().getString(R.string.btstring1));
-        setting_atuo.setText(getMContext().getResources().getString(R.string.btstring2));
-        setting_tbtxl.setText(getMContext().getResources().getString(R.string.btstring3));
+        setting_bt_switch.setText(getMContext().getResources().getString(R.string.btstring1));
+        setting_bt_switch.setSwitchBg();
+        setting_bt_auto_connect.setText(getMContext().getResources().getString(R.string.btstring2));
+        setting_bt_auto_connect.setSwitchBg();
+        setting_bt_auto_answer.setText(getMContext().getResources().getString(R.string.btstring3));
+        setting_bt_auto_answer.setSwitchBg();
         setting_sbm.setText(getMContext().getResources().getString(R.string.btstring4));
         setting_lspd.setText(getMContext().getResources().getString(R.string.btstring5));
         setting_ssxsb.setText(getMContext().getResources().getString(R.string.btstring7));
@@ -276,9 +259,6 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
         pairedAdapter.notifyDataSetChanged();
         setting_bt_name.setTextColor(getMContext().getResources().getColor(R.color.bt_name_color));
         searchAdapter.notifyDataSetChanged();
-        setting_bt.setTextColor(getMContext().getResources().getColor(R.color.bt_normal_color));
-        setting_atuo.setTextColor(getMContext().getResources().getColor(R.color.bt_normal_color));
-        setting_tbtxl.setTextColor(getMContext().getResources().getColor(R.color.bt_normal_color));
         setting_sbm.setTextColor(getMContext().getResources().getColor(R.color.bt_normal_color));
         setting_lspd.setTextColor(getMContext().getResources().getColor(R.color.bt_normal_color));
         setting_ssxsb.setTextColor(getMContext().getResources().getColor(R.color.bt_normal_color));
@@ -311,15 +291,12 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
         search_tip = getContentView().findViewById(R.id.setting_bt_search_tip);
         //子功能
         setting_zi = getContentView().findViewById(R.id.setting_zi);
-        setting_bt = getContentView().findViewById(R.id.setting_bt);
-        setting_atuo = getContentView().findViewById(R.id.setting_atuo);
-        setting_tbtxl = getContentView().findViewById(R.id.setting_tbtxl);
         setting_sbm = getContentView().findViewById(R.id.setting_sbm);
         setting_lspd = getContentView().findViewById(R.id.setting_lspd);
         setting_ssxsb = getContentView().findViewById(R.id.setting_ssxsb);
         setting_bt_loading = getContentView().findViewById(R.id.setting_bt_loading);
         //设置自动下载通话记录
-        setting_bt_auto_answer.setOnClickListener(new View.OnClickListener() {
+        setting_bt_auto_answer.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
@@ -327,10 +304,10 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
                         Log.d(TAG, "onClick: getBtAutoAnswerState" + mBPresenter.getBtAutoDownState());
                         if (mBPresenter.getBtAutoDownState()) {
                             mBPresenter.setBtAutoDownEnable(false);
-                            setting_bt_auto_answer.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_close));
+                            setting_bt_auto_answer.setSwitchButtonState(false);
                         } else {
                             mBPresenter.setBtAutoDownEnable(true);
-                            setting_bt_auto_answer.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_open));
+                            setting_bt_auto_answer.setSwitchButtonState(true);
                         }
                     }
 
@@ -340,7 +317,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
             }
         });
         //设置自动连接
-        setting_bt_auto_connect.setOnClickListener(new View.OnClickListener() {
+        setting_bt_auto_connect.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -352,12 +329,12 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
                         if (condition == 7) {
                             mBPresenter.setBtAutoConnect(NfDef.AUTO_CONNECT_DISABLE, 0);
                             Log.d(TAG, "onClick: setBtAutoConnect == AUTO_CONNECT_DISABLE");
-                            setting_bt_auto_connect.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_close));
+                            setting_bt_auto_connect.setSwitchButtonState(false);
                         } else {
 //                            mBPresenter.setBtAutoConnect(NfDef.AUTO_CONNECT_WHEN_OOR,0);
                             mBPresenter.setBtAutoConnect(7, 0);
                             Log.d(TAG, "onClick: setBtAutoConnect == AUTO_CONNECT_WHEN_BT_ON");
-                            setting_bt_auto_connect.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_open));
+                            setting_bt_auto_connect.setSwitchButtonState(true);
                         }
                     }
 
@@ -367,7 +344,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
             }
         });
         //设置蓝牙开关
-        setting_bt_switch.setOnClickListener(new View.OnClickListener() {
+        setting_bt_switch.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
@@ -376,10 +353,9 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
                         Log.d(TAG, "onClick: isBtEnabled" + mBPresenter.isBtEnabled());
                         if (mBPresenter.isBtEnabled()) {
                             mBPresenter.setBtEnable(false);
-                            setting_bt_switch.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_close));
+
                         } else {
                             mBPresenter.setBtEnable(true);
-                            setting_bt_switch.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_open));
                         }
                         setting_bt_loading.setVisibility(View.VISIBLE);
                         setting_bt_switch.setAlpha(0.2f);
@@ -722,14 +698,14 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
 //                        boolean btAutoAnswerState = mBPresenter.getBtAutoAnswerState();
                         //20:3c:ae:3e:b2:68
 //                        String btLocalAddress = mBPresenter.getBtLocalAddress();
-                        String btLocalAddress  = getBluetoothAddress();
-                        Log.d(TAG, "handleMessage: btLocalAddress="+btLocalAddress);
-                        if(btLocalAddress != null){
+                        String btLocalAddress = getBluetoothAddress();
+                        Log.d(TAG, "handleMessage: btLocalAddress=" + btLocalAddress);
+                        if (btLocalAddress != null) {
                             String s = btLocalAddress.replaceAll(":", "");
-                            if(s.length() > 6 ){
+                            if (s.length() > 6) {
                                 String substring = s.substring(6);
                                 setting_bt_name.setText(substring);
-                            }else {
+                            } else {
                                 setting_bt_name.setText("DFSK");
                             }
                         } else {
@@ -743,19 +719,19 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
                         Log.d(TAG, "handleMessage: btAutoDownState==" + btAutoDownState + " ===btEnabled=" + btEnabled + "  ===condition" + condition);
 
                         if (btAutoDownState) {
-                            setting_bt_auto_answer.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_open));
+                            setting_bt_auto_answer.setSwitchButtonState(true);
                         } else {
-                            setting_bt_auto_answer.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_close));
+                            setting_bt_auto_answer.setSwitchButtonState(false);
                         }
                         if (condition == 7) {
-                            setting_bt_auto_connect.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_open));
+                            setting_bt_auto_connect.setSwitchButtonState(true);
                         } else {
-                            setting_bt_auto_connect.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_close));
+                            setting_bt_auto_connect.setSwitchButtonState(false);
                         }
                         if (btEnabled) {
-                            setting_bt_switch.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_open));
+                            setting_bt_switch.setSwitchButtonState(true);
                         } else {
-                            setting_bt_switch.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_close));
+                            setting_bt_switch.setSwitchButtonState(false);
                             setting_zi.setVisibility(View.GONE);
                         }
                     } catch (RemoteException e) {
@@ -817,12 +793,12 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
                 case 0x03:
                     try {
 //                        String btLocalAddress = mBPresenter.getBtLocalAddress();
-                        String btLocalAddress  = getBluetoothAddress();
-                        Log.d(TAG, "handleMessage: btLocalAddress="+btLocalAddress);
+                        String btLocalAddress = getBluetoothAddress();
+                        Log.d(TAG, "handleMessage: btLocalAddress=" + btLocalAddress);
                         String name = "DFSK";
-                        if(btLocalAddress != null){
+                        if (btLocalAddress != null) {
                             String s = btLocalAddress.replaceAll(":", "");
-                            if(s.length() > 6 ){
+                            if (s.length() > 6) {
                                 name = s.substring(6);
                             }
                         }
@@ -833,7 +809,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
                         e.printStackTrace();
                     }
 
-                    setting_bt_switch.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_open));
+                    setting_bt_switch.setSwitchButtonState(true);
                     stopRotate(setting_bt_loading);
                     setting_bt_loading.setVisibility(View.GONE);
                     setting_bt_switch.setAlpha(1.0f);
@@ -852,7 +828,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
                     setting_bt_loading.setVisibility(View.GONE);
                     setting_bt_switch.setAlpha(1.0f);
                     setting_bt_switch.setClickable(true);
-                    setting_bt_switch.setImageDrawable(getMContext().getDrawable(R.drawable.bt_setting_btn_close));
+                    setting_bt_switch.setSwitchButtonState(false);
                     setting_zi.setVisibility(View.GONE);
                     break;
 
@@ -861,10 +837,21 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
                     if (isFromBtPhone) {
                         isFromBtPhone = false;
                         Log.d(TAG, "handleMessage: 来自电话，finish Settings");
-                        getActivity().finish();
+                        getActivity().moveTaskToBack(true);
+                        try {
+                            Method method = Activity.class.getDeclaredMethod("finish", int.class);
+                            method.setAccessible(true);
+                            method.invoke(getActivity(), 0);
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
                     } else {
-                        if(pairedList.size()>0){
-                            linearLayoutManager.scrollToPositionWithOffset(0,0);
+                        if (pairedList.size() > 0) {
+                            linearLayoutManager.scrollToPositionWithOffset(0, 0);
                         }
                         Log.d(TAG, "handleMessage: 不是来自电话");
                     }
@@ -874,177 +861,6 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter>  {
             return false;
         }
     });
-
-
-//    @Override
-//    public void onServiceConnectedChanged(boolean isConnected) {
-//        if (isConnected) {
-//            myHandler.sendEmptyMessage(0x00);
-//        } else {
-//            Log.d(TAG, "onServiceConnectedChanged: 服务绑定失败");
-//        }
-//
-//    }
-//
-//    @Override
-//    public void onEnableChanged(boolean b) {
-//        Log.d(TAG, "onEnableChanged: 蓝牙状态==" + b);
-//        if (b) {
-//            //蓝牙打开
-//            myHandler.sendEmptyMessage(0x03);
-//        } else {
-//            myHandler.sendEmptyMessage(0x04);
-//        }
-//    }
-//
-//    @Override
-//    public void onConnectedChanged(String address, int isConnected) {
-//        Log.d(TAG, "onConnectedChanged: 蓝牙连接状态" + isConnected);
-//    }
-//
-//    @Override
-//    public void onHfpStateChanged(String address, int isConnected) {
-//        Log.d(TAG, "onHfpStateChanged: address==" + address + "--isConnected==" + isConnected);
-//            if (isConnected == NforeBtBaseJar.CONNECT_DISCONNECT) {//蓝牙已断开连接
-//                //蓝牙已断开连接
-//                currAddress = "";
-////                for (int i = 0; i < searchList.size(); i++) {
-////                    searchList.get(i).setState(1);
-////                }
-//
-//            } else if (isConnected == NforeBtBaseJar.CONNECT_SUCCESSED) {//蓝牙连接上了
-//                currAddress = address;
-////                for (int i = 0; i < searchList.size(); i++) {
-////                    if (searchList.get(i).getAddress().equals(address)) {
-////                        searchList.remove(i);
-////                    }
-////                }
-//                myHandler.sendEmptyMessage(0x05);
-//            }
-//
-//        Log.d(TAG, "onHfpStateChanged: isConnected==" + isConnected + "===currAddress" + currAddress);
-//        try {
-//            mBPresenter.reqBtPairedDevices();//重新获取已配对设备
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
-//        //更新设备状态
-////        myHandler.sendEmptyMessage(0x02);
-//    }
-//
-//
-//    @Override
-//    public void onHfpAudioStateChanged(String s, int i, int i1) {
-//
-//    }
-//
-//    @Override
-//    public void onAvrcpStateChanged(String s, int b) {
-//        Log.d(TAG, "onAvrcpStateChanged: " + b);
-//    }
-//
-//    @Override
-//    public void onA2dpStateChanged(String s, int b) {
-//        Log.d(TAG, "onA2dpStateChanged: " + b);
-//    }
-//
-//    @Override
-//    public void onAdapterDiscoveryStarted() {
-//        Log.d(TAG, "onAdapterDiscoveryStarted: 开始扫描蓝牙");
-//        myHandler.sendEmptyMessage(0x89);
-//    }
-//
-//    @Override
-//    public void onAdapterDiscoveryFinished() {
-//        Log.d(TAG, "onAdapterDiscoveryFinished: 蓝牙扫描完毕");
-//        myHandler.sendEmptyMessage(0x88);
-//    }
-//
-//    @Override
-//    public void retPairedDevices(int elements, String[] address, String[] name, int[] ints) {
-//        Log.i(TAG, ">>>>>>>>>>>retPairedDevices<<<<<<<<<<<< " + elements);
-//        //已配对列表
-//        pairedList.clear();
-//        beanList.clear();
-//        if (elements > 0) {
-//            for (int i = 0; i < elements; i++) {
-//                Log.d(TAG, "retPairedDevices: name===" + name[i] + "====address[i]==" + address[i]);
-//                if (name[i] == null) {
-//                    name[i] = address[i];
-//                }
-//                int state = 1;
-//                if (address[i].equals(currAddress)) {
-//                    state = 2;
-//                    Log.d(TAG, "retPairedDevices: currAddress连接");
-//                }
-//                Log.d(TAG, "retPairedDevices: name===" + name[i] + "====address[i]==" + address[i] + "===state===" + state + "==currAddress===" + currAddress);
-//                BluetoothBean bluetoothBean = new BluetoothBean(name[i], state, address[i]);
-//                beanList.add(bluetoothBean);
-////                pairedList.add(bluetoothBean);
-//            }
-//        }
-//        myHandler.sendEmptyMessage(0x01);
-////        isGetPaired = false;
-////        history_matching_refresh.setImageDrawable(getMContext().getDrawable(R.drawable.select_refresh));
-////        stopRotate(history_matching_refresh);
-//    }
-//
-//    @Override
-//    public void onDeviceFound(String address, String name) {
-//        Log.d(TAG, "------------------onDeviceFound()-------------------- " + address);
-//        if (!device_founded_list.contains(address) && address != NfDef.DEFAULT_ADDRESS) {
-//            int state = 0;//未配对
-//            if (pairedList.size() > 0) {
-//                for (int i = 0; i < pairedList.size(); i++) {
-//                    if (address.equals(pairedList.get(i).getAddress())) {
-//                        state = 1;//已配对过
-//                    }
-//                }
-//            }
-//            if (address.equals(currAddress)) {
-//                state = 2;
-//            }
-//            if(state == 0){
-//                device_founded_list.add(address);
-//                BluetoothBean bean = new BluetoothBean(name, state, address);
-//                Message message = new Message();
-//                message.what = 0x02;
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("bean", bean);
-//                message.setData(bundle);
-//                myHandler.sendMessage(message);
-//                Log.d(TAG, "onDeviceFound: sendMessage");
-//            }
-//
-//        }
-//    }
-//
-//    @Override
-//    public void onDeviceBondStateChanged(String address, String name, int state) {
-//        Log.i(TAG, ">>>>>>>>>>>onDeviceBondStateChanged<<<<<<<配对成功<<<<< ");
-//        if (state == NfDef.BOND_BONDED) {
-//            if (mBPresenter == null)
-//                return;
-//            try {
-//                for (int i = 0; i < searchList.size(); i++) {
-//                    if (searchList.get(i).getAddress().equals(address)) {
-//                        searchList.remove(i);
-//                    }
-//                }
-//                myHandler.sendEmptyMessage(0x02);
-//                Log.d(TAG, "onDeviceBondStateChanged: 获取已配对设备");
-//                mBPresenter.reqBtPairedDevices();//重新获取已配对设备
-////                mBPresenter.reqBtConnectHfpA2dp(address);//如果配对成功，连接设备
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void onLocalAdapterNameChanged(String s) {
-//
-//    }
 
 
     /**

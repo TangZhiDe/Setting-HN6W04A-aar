@@ -7,11 +7,15 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.adayo.app.settingsbt.presenter.business.system.BtPresenter;
+
 
 public class BtSettingService extends Service {
     protected static String TAG = BtSettingService.class.getCanonicalName();
     private PairBroadcastReceiver pairBroadcastReceiver;
     public static boolean pairFromPhone = true;
+    private BtPresenter btPresenter;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -21,9 +25,14 @@ public class BtSettingService extends Service {
     public void onCreate() {
         super.onCreate();
         registerBroadcast();
+//        initPresenter();
 
     }
 
+//    private void initPresenter() {
+//        btPresenter = new BtPresenter(getApplication());
+//        btPresenter.registerServiceListener();
+//    }
 
 
     private void registerBroadcast() {

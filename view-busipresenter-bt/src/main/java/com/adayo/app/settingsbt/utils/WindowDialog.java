@@ -43,13 +43,7 @@ public class WindowDialog implements View.OnClickListener{
     private BtPresenter btPresenter;
     private boolean pairFromPhone;
 
-//    public static WindowDialog getInstance(Context context,boolean pairFromPhone, BluetoothDevice mDevice,String name,String paircode){
-//        if(null == instance){
-//            Log.d(TAG, "getInstance: 实例化" );
-//            instance = new WindowDialog(context,pairFromPhone, mDevice,name,paircode);
-//        }
-//        return instance;
-//    }
+
 
     public static WindowDialog getInstance(Context context){
         if(null == instance){
@@ -58,14 +52,7 @@ public class WindowDialog implements View.OnClickListener{
         }
         return instance;
     }
-//    public static void initInstance(){
-//        if(instance != null){
-//            Log.d(TAG, "initInstance: ===null" );
-//            instance.dismiss();
-//            instance = null;
-//        }
-//
-//    }
+
 private WindowDialog(Context context){
     this.context = context;
     this.x = 360;
@@ -82,27 +69,7 @@ public void setParams(boolean pairFromPhone, BluetoothDevice mDevice,String name
     this.initView();
     show();
 }
-    private WindowDialog(){
 
-    }
-//    private WindowDialog(Context context, boolean pairFromPhone, BluetoothDevice mDevice, String name, String paircode){
-//        this.context = context;
-//        this.x = -250;
-//        this.y = 50;
-//        this.name = name;
-//        this.paircode = paircode;
-//        this.mDevice = mDevice;
-//        this.pairFromPhone = pairFromPhone;
-//        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        if(pairFromPhone){
-//            this.mView = inflater.inflate(R.layout.pairdialogfromphone_layout, null);
-//        }else {
-//            this.mView = inflater.inflate(R.layout.pairdialog_layout, null);
-//        }
-//        this.mView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-//        this.init();
-//        this.initView();
-//    }
 
     private void init() {
         wm = (WindowManager) context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
@@ -217,18 +184,7 @@ public void setParams(boolean pairFromPhone, BluetoothDevice mDevice,String name
                     mIsShow = true;
                     if(!pairFromPhone){
                         Log.d(TAG, "show: 自动配对");
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                try {
-//                                    Thread.sleep(1500);
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//
-//
-//                            }
-//                        }).start();
+
                         myHandler.sendEmptyMessageDelayed(0,1500);
 
                     }

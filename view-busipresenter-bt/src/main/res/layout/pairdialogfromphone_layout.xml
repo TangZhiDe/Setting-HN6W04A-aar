@@ -77,11 +77,13 @@
                 android:layout_weight="1"
                 android:text="@string/btstring25"
                 android:textSize="28px"
-                android:background="@null"
+                android:background="@drawable/selector_comfir"
                 android:id="@+id/pair_bt_pair"
-                android:textColor="@drawable/selector_textcolor"
+                android:textColor="@color/bt_blue_color"
                 android:gravity="center"
                 android:layout_height="match_parent" />
+            <!--
+                android:textColor="@drawable/selector_textcolor"-->
             <!--<View-->
             <!--android:layout_width="1dp"-->
             <!--android:layout_marginBottom="10px"-->
@@ -94,9 +96,12 @@
                 android:text="@string/btstring16"
                 android:id="@+id/pair_bt_cancel"
                 android:textSize="28px"
-                android:textColor="@drawable/selector_textcolor"
+                android:background="@drawable/selector_comfir_right"
+                android:textColor="@color/bt_unselect_dialog"
                 android:gravity="center"
                 android:layout_height="match_parent" />
+            <!--
+                android:textColor="@drawable/selector_textcolor"-->
         </LinearLayout>
     </LinearLayout>
 

@@ -46,8 +46,9 @@ public class BtPresenter implements
     
     /** 是否已储存ui通话记录到数据库 **/
     private static boolean isSetUiCallLogsToDB = false;
-    private Context context ;
-    public BtPresenter(){
+    private Context mContext ;
+    public BtPresenter(Context context){
+        this.mContext = context;
 	}
 
 
@@ -235,9 +236,9 @@ public class BtPresenter implements
     }
     
     /** 注册服务及serviceCallback **/
-	public void registerServiceListener(Context context) {
-		Log.i(TAG, "---------------------registerServiceListener--------------------------");
-		NforeBtBaseJar.init(context);
+	public void registerServiceListener() {
+		Log.i(TAG, "---------------------registerServiceListener-----------------------this---"+this);
+		NforeBtBaseJar.init(mContext);
 		NforeBtBaseJar.registerBluetoothServiceConnectedListener(this);
 		NforeBtBaseJar.registerBluetoothSettingChangeListener(this);
 		NforeBtBaseJar.registerBluetoothPhoneChangeListener(this);
@@ -248,7 +249,9 @@ public class BtPresenter implements
 	/** 注销服务及serviceCallback **/
 	public void unregisterServiceListener() {
 		Log.i(TAG, "-----------------unregisterServiceListener------------------------");
+
 		NforeBtBaseJar.release();
+
 	}
 
 	//-------------------------------------------------------------------------------------------------------------

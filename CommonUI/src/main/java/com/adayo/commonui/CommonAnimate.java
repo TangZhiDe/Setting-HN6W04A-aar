@@ -4,6 +4,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by admin on 2018/9/12.
@@ -57,17 +60,38 @@ public class CommonAnimate {
         // 也就是动画先由n到第n+1层然后 n+1再到n+2...最后到m层
         int changeLevel = needToChangeLevel - mHaveChangedLevel;
         for (int i = 0; i < changeLevel; i++) {
+//            HashMap<Integer, View> viewMap = new HashMap<>();
+//            for (Integer level : mViewMap.keySet()) {
+//                if (level <= mHaveChangedLevel + 1) {
+//                    viewMap.put(level, mViewMap.get(level));
+//                }
+//            }
+
+//            mHaveChangedLevel++;
+//
+//
+//            for (Integer level : viewMap.keySet()) {
+//                View view = viewMap.get(level);
+//                view.animate().scaleY(0.9f - 0.1f * (viewMap.size() - level))
+//                        .alpha(0.4f).translationX(-40 * (viewMap.size() + 1 - level))
+//                        .setDuration(500).start();
+//            }
+
+            Set<Map.Entry<Integer,View>> entrySet1 = mViewMap.entrySet();
+            Iterator<Map.Entry<Integer, View>> it1 = entrySet1.iterator();
             HashMap<Integer, View> viewMap = new HashMap<>();
-            for (Integer level : mViewMap.keySet()) {
-                if (level <= mHaveChangedLevel + 1) {
-                    viewMap.put(level, mViewMap.get(level));
-                }
+            while (it1.hasNext()){
+                Map.Entry<Integer,View> me = it1.next();
+                viewMap.put(me.getKey(),me.getValue());
             }
             mHaveChangedLevel++;
-            for (Integer level : viewMap.keySet()) {
-                View view = viewMap.get(level);
-                view.animate().scaleY(0.9f - 0.1f * (viewMap.size() - level))
-                        .alpha(0.4f).translationX(-40 * (viewMap.size() + 1 - level))
+            Set<Map.Entry<Integer,View>> entrySet2 = viewMap.entrySet();
+            Iterator<Map.Entry<Integer, View>> it2 = entrySet2.iterator();
+            while (it2.hasNext()){
+                Map.Entry<Integer,View> me = it2.next();
+                View view = me.getValue();
+                view.animate().scaleY(0.9f - 0.1f * (viewMap.size() - me.getKey()))
+                        .alpha(0.4f).translationX(-40 * (viewMap.size() + 1 - me.getKey()))
                         .setDuration(500).start();
             }
         }

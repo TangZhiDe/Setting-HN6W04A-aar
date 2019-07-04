@@ -143,8 +143,8 @@
     <orderEntry type="library" name="Gradle: androidx.asynclayoutinflater:asynclayoutinflater-1.0.0" level="project" />
     <orderEntry type="library" name="Gradle: androidx.concurrent:concurrent-futures:1.0.0-alpha02@jar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:runtime-1.1.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.android.support:customview-28.0.0" level="project" />
     <orderEntry type="library" name="Gradle: __local_aars__:/home/lzy/1TZD/project/Setting-HN6W04A-aar/view-busipresenter-bt/libs/systemdialog-proxy.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:customview-28.0.0" level="project" />
     <orderEntry type="library" name="Gradle: androidx.activity:activity-1.0.0-alpha04" level="project" />
     <orderEntry type="library" name="Gradle: __local_aars__:/home/lzy/1TZD/project/Setting-HN6W04A-aar/view-busipresenter-bt/libs/fastjson-1.2.2.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: __local_aars__:/home/lzy/1TZD/project/Setting-HN6W04A-aar/view-busipresenter-bt/libs/nforebtbase.jar:unspecified@jar" level="project" />

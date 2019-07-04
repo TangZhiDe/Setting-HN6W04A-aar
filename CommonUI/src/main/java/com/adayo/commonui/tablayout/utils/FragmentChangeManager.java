@@ -24,7 +24,11 @@ public class FragmentChangeManager {
     /** 初始化fragments */
     private void initFragments() {
         for (Fragment fragment : mFragments) {
-            mFragmentManager.beginTransaction().add(mContainerViewId, fragment).hide(fragment).commit();
+            if((mFragmentManager.beginTransaction() != null) &&(mFragmentManager.beginTransaction().add(mContainerViewId, fragment) != null)){
+                if(mFragmentManager.beginTransaction().add(mContainerViewId, fragment).hide(fragment) != null){
+                    mFragmentManager.beginTransaction().add(mContainerViewId, fragment).hide(fragment).commit();
+                }
+            }
         }
 
         setFragments(0);
@@ -34,6 +38,9 @@ public class FragmentChangeManager {
     public void setFragments(int index) {
         for (int i = 0; i < mFragments.size(); i++) {
             FragmentTransaction ft = mFragmentManager.beginTransaction();
+            if(ft == null){
+                return;
+            }
             Fragment fragment = mFragments.get(i);
             if (i == index) {
                 ft.show(fragment);

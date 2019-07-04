@@ -131,7 +131,7 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
                     if (deltaY == 0 || mItemH == 0) {
                         return;
                     }
-                    if (Math.abs(deltaY) < mItemH / 2) {
+                    if (Math.abs(deltaY) < ((float) (mItemH / 2))) {
                         int d = getSmoothDistance(deltaY);
                         smoothScrollBy(d, WheelConstants
                                 .WHEEL_SMOOTH_SCROLL_DURATION);
@@ -230,6 +230,9 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
                     getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
                 if (getChildCount() > 0 && mItemH == 0) {
+                    if(getChildAt(0) == null){
+                        return;
+                    }
                     mItemH = getChildAt(0).getHeight();
                     if (mItemH != 0) {
                         ViewGroup.LayoutParams params = getLayoutParams();
@@ -550,7 +553,7 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
             return;
         }
         int position = 0;
-        if (Math.abs(getChildAt(0).getY()) <= mItemH / 2) {
+        if (Math.abs(getChildAt(0).getY()) <= ((int)(mItemH / 2))) {
             position = firstPosition;
         } else {
             position = firstPosition + 1;
@@ -558,7 +561,10 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
         refreshVisibleItems(firstPosition, position + mWheelSize / 2,
                 mWheelSize / 2);
         if (mLoop) {
-            position = (position + mWheelSize / 2) % getWheelCount();
+            int reVal = getWheelCount();
+            if(reVal > 0){
+                position = (position + mWheelSize / 2) % reVal;
+            }
         }
         if (position == mCurrentPositon && !join) {
             return;
@@ -589,7 +595,9 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
                     instanceof SimpleWheelAdapter) {
                 TextView textView = (TextView) itemView.findViewWithTag
                         (WheelConstants.WHEEL_ITEM_TEXT_TAG);
-                refreshTextView(i, curPosition, itemView, textView);
+                if(textView != null){
+                    refreshTextView(i, curPosition, itemView, textView);
+                }
             } else {    // 自定义类型
                 TextView textView = WheelUtils.findTextView(itemView);
                 if (textView != null) {

@@ -36,11 +36,11 @@ public class CommonDrawable extends WheelDrawable {
                     0x00AAAAAA
             };  // 阴影色值
 
-    private GradientDrawable mTopShadow = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-            SHADOWS_COLORS);    // 顶部阴影
-
-    private GradientDrawable mBottomShadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-            SHADOWS_COLORS);    // 底部阴影
+//    private GradientDrawable mTopShadow = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+//            SHADOWS_COLORS);    // 顶部阴影
+//
+//    private GradientDrawable mBottomShadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+//            SHADOWS_COLORS);    // 底部阴影
 
     private Paint mCommonBgPaint, mCommonPaint, mCommonDividerPaint, mCommonBorderPaint;
 

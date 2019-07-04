@@ -30,7 +30,7 @@ public class CommonTitle extends LinearLayout {
         addView(view);
         imageView = view.findViewById(R.id.iv_title);
         textView = view.findViewById(R.id.tv_title);
-        linearLayout = view.findViewById(R.id.ll_title);
+       // linearLayout = view.findViewById(R.id.ll_title);
     }
 
     /**

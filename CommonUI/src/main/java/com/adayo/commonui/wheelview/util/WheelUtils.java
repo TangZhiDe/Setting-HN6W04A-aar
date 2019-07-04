@@ -81,6 +81,9 @@ public class WheelUtils {
      * @return
      */
     public static int dip2px(Context context, float dp) {
+        if(context.getResources() == null){
+            return 0;
+        }
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
@@ -93,6 +96,9 @@ public class WheelUtils {
      * @return
      */
     public static int sp2px(Context context, float sp) {
+        if(context.getResources() == null){
+            return 0;
+        }
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (sp * fontScale + 0.5f);
     }

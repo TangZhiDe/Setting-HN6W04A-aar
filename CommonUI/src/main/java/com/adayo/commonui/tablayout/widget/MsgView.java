@@ -127,11 +127,17 @@ public class MsgView extends TextView {
     }
 
     protected int dp2px(float dp) {
+        if(context.getResources() == null){
+            return 0;
+        }
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
 
     protected int sp2px(float sp) {
+        if(this.context.getResources() == null){
+            return 0;
+        }
         final float scale = this.context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (sp * scale + 0.5f);
     }

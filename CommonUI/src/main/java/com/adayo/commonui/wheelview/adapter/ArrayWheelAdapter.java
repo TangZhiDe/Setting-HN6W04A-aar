@@ -41,6 +41,9 @@ public class ArrayWheelAdapter<T> extends BaseWheelAdapter<T> {
         }
         WheelItem wheelItem = (WheelItem) convertView;
         T item = getItem(position);
+        if(item == null){
+            return null;
+        }
         if (wheelItem instanceof CharSequence) {
             wheelItem.setText((CharSequence) item);
         } else {

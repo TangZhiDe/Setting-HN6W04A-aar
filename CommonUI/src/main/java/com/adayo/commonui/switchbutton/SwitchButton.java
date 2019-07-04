@@ -20,6 +20,8 @@ import android.widget.Checkable;
 
 import com.adayo.commonui.R;
 
+import java.lang.ref.WeakReference;
+
 
 /**
  * SwitchButton.
@@ -37,12 +39,12 @@ public class SwitchButton extends View implements Checkable {
      * 5.拖动-切换
      * 6.点击切换
      **/
-    private final int ANIMATE_STATE_NONE = 0;
-    private final int ANIMATE_STATE_PENDING_DRAG = 1;
-    private final int ANIMATE_STATE_DRAGING = 2;
-    private final int ANIMATE_STATE_PENDING_RESET = 3;
-    private final int ANIMATE_STATE_PENDING_SETTLE = 4;
-    private final int ANIMATE_STATE_SWITCH = 5;
+    private static final int ANIMATE_STATE_NONE = 0;
+    private static final int ANIMATE_STATE_PENDING_DRAG = 1;
+    private static final int ANIMATE_STATE_DRAGING = 2;
+    private static final int ANIMATE_STATE_PENDING_RESET = 3;
+    private static final int ANIMATE_STATE_PENDING_SETTLE = 4;
+    private static final int ANIMATE_STATE_SWITCH = 5;
 
     public SwitchButton(Context context) {
         super(context);
@@ -218,7 +220,7 @@ public class SwitchButton extends View implements Checkable {
         float viewPadding = Math.max(shadowRadius + shadowOffset, borderWidth);
 
         height = h - viewPadding - viewPadding;
-        width = w - viewPadding - viewPadding;
+       // width = w - viewPadding - viewPadding;
 
         viewRadius = height * .5f;
         buttonRadius = viewRadius - borderWidth;
@@ -228,7 +230,7 @@ public class SwitchButton extends View implements Checkable {
         right = w - viewPadding;
         bottom = h - viewPadding;
 
-        centerX = (left + right) * .5f;
+       // centerX = (left + right) * .5f;
         centerY = (top + bottom) * .5f;
 
         buttonMinX = left + viewRadius;
@@ -1014,65 +1016,91 @@ public class SwitchButton extends View implements Checkable {
      */
     private long touchDownTime;
 
-    private Runnable postPendingDrag = new Runnable() {
+    private Runnable postPendingDrag = new MyRunnable(this) ;
+
+    private static class MyRunnable implements Runnable{
+        WeakReference<SwitchButton> mSwitchButton ;
+
+        public MyRunnable(SwitchButton switchbutton){
+            this.mSwitchButton = new WeakReference <> (switchbutton);
+        }
+
         @Override
         public void run() {
-            if (!isInAnimating()) {
-                pendingDragState();
+            if((mSwitchButton != null)&&(mSwitchButton.get() != null)){
+                if (!mSwitchButton.get().isInAnimating()) {
+                    mSwitchButton.get().pendingDragState();
+                }
             }
         }
-    };
 
-    private ValueAnimator.AnimatorUpdateListener animatorUpdateListener
-            = new ValueAnimator.AnimatorUpdateListener() {
+    }
+
+    private ValueAnimator.AnimatorUpdateListener animatorUpdateListener = new MyAnimatorUpdateListener(this);
+
+    private static class MyAnimatorUpdateListener implements ValueAnimator.AnimatorUpdateListener {
+        WeakReference<SwitchButton> mSwitchButton ;
+
+        public MyAnimatorUpdateListener(SwitchButton switchbutton){
+            this.mSwitchButton = new WeakReference <> (switchbutton);
+        }
+
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
-            float value = (Float) animation.getAnimatedValue();
-            switch (animateState) {
+            float value = 0;
+            if(animation.getAnimatedValue() != null){
+                value = (Float) animation.getAnimatedValue();
+            }
+
+            if(mSwitchButton.get() == null){
+                return;
+            }
+
+            switch (mSwitchButton.get().animateState) {
                 case ANIMATE_STATE_PENDING_SETTLE: {
                 }
                 case ANIMATE_STATE_PENDING_RESET: {
                 }
                 case ANIMATE_STATE_PENDING_DRAG: {
-                    viewState.checkedLineColor = (int) argbEvaluator.evaluate(
+                    mSwitchButton.get().viewState.checkedLineColor = (int) mSwitchButton.get().argbEvaluator.evaluate(
                             value,
-                            beforeState.checkedLineColor,
-                            afterState.checkedLineColor
+                            mSwitchButton.get().beforeState.checkedLineColor,
+                            mSwitchButton.get().afterState.checkedLineColor
                     );
 
-                    viewState.radius = beforeState.radius
-                            + (afterState.radius - beforeState.radius) * value;
+                    mSwitchButton.get().viewState.radius = mSwitchButton.get().beforeState.radius
+                            + (mSwitchButton.get().afterState.radius - mSwitchButton.get().beforeState.radius) * value;
 
-                    if (animateState != ANIMATE_STATE_PENDING_DRAG) {
-                        viewState.buttonX = beforeState.buttonX
-                                + (afterState.buttonX - beforeState.buttonX) * value;
+                    if (mSwitchButton.get().animateState != ANIMATE_STATE_PENDING_DRAG) {
+                        mSwitchButton.get().viewState.buttonX = mSwitchButton.get().beforeState.buttonX
+                                + (mSwitchButton.get().afterState.buttonX - mSwitchButton.get().beforeState.buttonX) * value;
                     }
 
-                    viewState.checkStateColor = (int) argbEvaluator.evaluate(
+                    mSwitchButton.get().viewState.checkStateColor = (int) mSwitchButton.get().argbEvaluator.evaluate(
                             value,
-                            beforeState.checkStateColor,
-                            afterState.checkStateColor
+                            mSwitchButton.get(). beforeState.checkStateColor,
+                            mSwitchButton.get().afterState.checkStateColor
                     );
 
                     break;
                 }
                 case ANIMATE_STATE_SWITCH: {
-                    viewState.buttonX = beforeState.buttonX
-                            + (afterState.buttonX - beforeState.buttonX) * value;
+                    mSwitchButton.get().viewState.buttonX = mSwitchButton.get().beforeState.buttonX
+                            + (mSwitchButton.get().afterState.buttonX - mSwitchButton.get().beforeState.buttonX) * value;
 
-                    float fraction = (viewState.buttonX - buttonMinX) / (buttonMaxX - buttonMinX);
+                    float fraction = (mSwitchButton.get().viewState.buttonX - mSwitchButton.get().buttonMinX) / (mSwitchButton.get().buttonMaxX - mSwitchButton.get().buttonMinX);
 
-                    viewState.checkStateColor = (int) argbEvaluator.evaluate(
+                    mSwitchButton.get().viewState.checkStateColor = (int) mSwitchButton.get().argbEvaluator.evaluate(
                             fraction,
-                            uncheckColor,
-                            checkedColor
+                            mSwitchButton.get().uncheckColor,
+                            mSwitchButton.get().checkedColor
                     );
 
-                    viewState.radius = fraction * viewRadius;
-                    viewState.checkedLineColor = (int) argbEvaluator.evaluate(
+                    mSwitchButton.get().viewState.radius = fraction * mSwitchButton.get().viewRadius;
+                    mSwitchButton.get().viewState.checkedLineColor = (int) mSwitchButton.get().argbEvaluator.evaluate(
                             fraction,
                             Color.TRANSPARENT,
-                            checkLineColor
+                            mSwitchButton.get().checkLineColor
                     );
                     break;
                 }
@@ -1083,46 +1111,57 @@ public class SwitchButton extends View implements Checkable {
                     break;
                 }
             }
-            postInvalidate();
+            mSwitchButton.get().postInvalidate();
         }
-    };
+    }
 
-    private Animator.AnimatorListener animatorListener
-            = new Animator.AnimatorListener() {
+    private Animator.AnimatorListener animatorListener = new  MyAnimatorListener(this);
+
+    private static class MyAnimatorListener implements  Animator.AnimatorListener{
+        WeakReference<SwitchButton> mSwitchButton ;
+
+        public MyAnimatorListener(SwitchButton switchbutton){
+            this.mSwitchButton = new WeakReference <> (switchbutton);
+        }
+
         @Override
         public void onAnimationStart(Animator animation) {
         }
 
         @Override
         public void onAnimationEnd(Animator animation) {
-            switch (animateState) {
+            if(mSwitchButton.get() == null){
+                return;
+            }
+
+            switch (mSwitchButton.get().animateState) {
                 case ANIMATE_STATE_DRAGING: {
                     break;
                 }
                 case ANIMATE_STATE_PENDING_DRAG: {
-                    animateState = ANIMATE_STATE_DRAGING;
-                    viewState.checkedLineColor = Color.TRANSPARENT;
-                    viewState.radius = viewRadius;
+                    mSwitchButton.get().animateState = ANIMATE_STATE_DRAGING;
+                    mSwitchButton.get().viewState.checkedLineColor = Color.TRANSPARENT;
+                    mSwitchButton.get().viewState.radius = mSwitchButton.get().viewRadius;
 
-                    postInvalidate();
+                    mSwitchButton.get().postInvalidate();
                     break;
                 }
                 case ANIMATE_STATE_PENDING_RESET: {
-                    animateState = ANIMATE_STATE_NONE;
-                    postInvalidate();
+                    mSwitchButton.get().animateState = ANIMATE_STATE_NONE;
+                    mSwitchButton.get().postInvalidate();
                     break;
                 }
                 case ANIMATE_STATE_PENDING_SETTLE: {
-                    animateState = ANIMATE_STATE_NONE;
-                    postInvalidate();
-                    broadcastEvent();
+                    mSwitchButton.get().animateState = ANIMATE_STATE_NONE;
+                    mSwitchButton.get().postInvalidate();
+                    mSwitchButton.get().broadcastEvent();
                     break;
                 }
                 case ANIMATE_STATE_SWITCH: {
-                    isChecked = !isChecked;
-                    animateState = ANIMATE_STATE_NONE;
-                    postInvalidate();
-                    broadcastEvent();
+                    mSwitchButton.get().isChecked = !mSwitchButton.get().isChecked;
+                    mSwitchButton.get().animateState = ANIMATE_STATE_NONE;
+                    mSwitchButton.get().postInvalidate();
+                    mSwitchButton.get().broadcastEvent();
                     break;
                 }
                 default:
@@ -1139,7 +1178,7 @@ public class SwitchButton extends View implements Checkable {
         @Override
         public void onAnimationRepeat(Animator animation) {
         }
-    };
+    }
 
 
     /*******************************************************/

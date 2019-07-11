@@ -133,9 +133,9 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter> {
     @Override
     public void onDestroy() {
         LogUtils.iL(TAG, "onDestroy");
-        if (mBPresenter != null) {
-            mBPresenter.unregisterServiceListener();
-        }
+//        if (mBPresenter != null) {
+//            mBPresenter.unregisterServiceListener();
+//        }
         currAddress = "";
         super.onDestroy();
     }
@@ -150,12 +150,17 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter> {
 
     @Override
     public void setBPresenter(BtPresenter btPresenter) {
-        this.mBPresenter = btPresenter;
-        Log.d(TAG, "setBPresenter:1.91 ");
-        if (mBPresenter != null) {
-            Log.d(TAG, "setBPresenter: registerServiceListener");
-            mBPresenter.registerServiceListener();
+//        this.mBPresenter = btPresenter;
+        if(BtSettingService.btPresenter != null){
+            this.mBPresenter =BtSettingService.btPresenter;
+            this.mBPresenter.setBluetoothTFragment(this);
+            Log.d(TAG, "setBPresenter:BtSettingService.btPresenter ");
         }
+        Log.d(TAG, "setBPresenter:1.92 ");
+//        if (mBPresenter != null) {
+//            Log.d(TAG, "setBPresenter: registerServiceListener");
+//            mBPresenter.registerServiceListener();
+//        }
         if (getActivity() == null) {
             Log.d(TAG, "getActivity: ==null");
         }
@@ -749,7 +754,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter> {
                         history_matching_list.setVisibility(View.GONE);
                         history_matching_tip.setVisibility(View.VISIBLE);
                     }
-
+                    pairedAdapter.setSearchBluetooth(pairedList);
                     pairedAdapter.notifyDataSetChanged();
                     break;
                 case 0x02:
@@ -760,6 +765,7 @@ public class BluetoothTFragment extends BaseFragment<BtPresenter> {
                     }
                     searchList = paixu(searchList);
                     Log.d(TAG, "handleMessage:searchLisst.size ==" + searchList.size() + "currAddress = " + currAddress);
+                    searchAdapter.setSearchBluetooth(searchList);
                     searchAdapter.notifyDataSetChanged();
                     if (searchList.size() > 0) {
                         ViewGroup.LayoutParams lp = search_list.getLayoutParams();

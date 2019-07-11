@@ -30,10 +30,7 @@ public class BTRecyclerAdapter extends RecyclerView.Adapter<BTRecyclerAdapter.My
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View inflate = LayoutInflater.from(context).inflate(R.layout.bt_device_item, viewGroup, false);
-
-
         MyViewHolder myViewHolder = new MyViewHolder(inflate);
-
         return myViewHolder;
     }
 
@@ -95,6 +92,10 @@ public class BTRecyclerAdapter extends RecyclerView.Adapter<BTRecyclerAdapter.My
     private OnPairedDeleteListener onPairedDeleteListener;
     public void setOnPairedDeleteListener(OnPairedDeleteListener onPairedDeleteListener){
         this.onPairedDeleteListener = onPairedDeleteListener;
+    }
+
+    public void setSearchBluetooth(List<BluetoothBean> list){
+        this.list = list;
     }
 
     @Override

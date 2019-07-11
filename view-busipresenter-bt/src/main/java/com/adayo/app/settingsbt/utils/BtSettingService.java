@@ -14,7 +14,7 @@ public class BtSettingService extends Service {
     protected static String TAG = BtSettingService.class.getCanonicalName();
     private PairBroadcastReceiver pairBroadcastReceiver;
     public static boolean pairFromPhone = true;
-    private BtPresenter btPresenter;
+    public static BtPresenter btPresenter;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -25,14 +25,14 @@ public class BtSettingService extends Service {
     public void onCreate() {
         super.onCreate();
         registerBroadcast();
-//        initPresenter();
+        initPresenter();
 
     }
 
-//    private void initPresenter() {
-//        btPresenter = new BtPresenter(getApplication());
-//        btPresenter.registerServiceListener();
-//    }
+    private void initPresenter() {
+        btPresenter = new BtPresenter(getApplication());
+        btPresenter.registerServiceListener();
+    }
 
 
     private void registerBroadcast() {
@@ -59,6 +59,10 @@ public class BtSettingService extends Service {
         super.onDestroy();
         Log.d(TAG, "onDestroy: service销毁" );
         unRegisterBroadcast();
+        if(btPresenter != null){
+            btPresenter.unregisterServiceListener();
+            btPresenter = null;
+        }
     }
 
 }
